@@ -1,0 +1,207 @@
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+        <title>Todo App</title>
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.7.14/css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="https://www.pywe.org/static/css/animate.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="/static/css/main.css" rel="stylesheet">
+    </head>
+    <body>
+        <header>
+        </header>
+        <main class="container"> 
+            <h3 class="text-danger">Todoers</h3>
+            <p class="h4">We help manage your tasks the most effective way</p>
+            <div class="row">
+                {% for task in tasks %}
+                <div class="col-lg-12 col-md-12 col-sm-12 card shadow">
+                    <div class="card-header">
+                        <div class="form-check-inline" style="width: 80% !important;">
+                            <label class="form-check-label" >
+                              <input type="checkbox" class="form-check-input" value="" style="height:15px !important;">
+                              <span class="h4">{{task.title}}</span>
+                            </label>
+                        </div>
+                        <div style="width: 13% !important;display: inline;float: right !important;">
+                            <span><img src="/static/images/user.svg" style="border-radius: 50px;" height="50px" width="50px"></span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p>{{task.description}}</p>
+                    </div>
+                    <p class="card-footer">Due {{task.due_date}}</p>
+                    <p style="text-align: end;margin-right: 10px;">
+                        <span class="btn btn-primary"><i class="fa fa-pencil"></i></span>
+                        <span class="btn btn-danger"><i class="fa fa-trash"></i></span>
+                    </p>
+
+                </div>
+                <br>
+                {% empty %}
+                <p>You have no tasks yet, please create one</p>
+                {% endfor %}
+            </div>
+                <div id="myfab" title="Add Task">
+                    <nav id="navbutton">
+                        <div class="fab animated heartBeat delay-3s" id="sidebarCollapse" style="z-index:2500 !important;">+</div>
+                    </nav>
+                </div>
+
+        <!--Task Modal-->
+        <div id="addModal"  class="modal bd-example-modal-md" >
+            <div class="modal-dialog modal-md" >
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" href="#" class="close" data-dismiss="modal" aria-label=""><span>×</span></button>
+                    </div>
+                <br>
+                <div class="modal-body shadow">
+                        <div id="account-box" style="border-radius:15px;padding:30px 10px 10px 10px;">
+                        <!--Sign up begins here-->
+                        <div style="margin:-50px auto auto auto;background:#fff;width:80px;padding-left:10px"></div>
+                            <div class="animated fadeInRight center">
+                            <form id="taskForm" method="dialog" action="#">
+                                <h3 style="text-align: center;"><strong>Add A Task</strong></h3>
+                                <p class="alert alert-success text-center" id="success-message" hidden></p>
+                                <p class="alert alert-danger text-center" id="error-message" hidden></p>
+                                <p id="info-message"></p>
+                                <div class="form-group">
+                                    <label>Task Title</label>
+                                    <input type="text" class="form-control" name="title" placeholder="Title" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Task description</label>
+                                    <textarea class="form-control" placeholder="describe the task" name="description"></textarea>
+                                </div>      
+                                <div class="input-group date" data-provide="datepicker">
+                                    <input type="text" name="due_date" placeholder="Due Date" class="form-control">
+                                    <div class="input-group-addon">
+                                        <span class="glyphicon glyphicon-th"></span>
+                                    </div>
+                                </div>   
+                                <br>
+                                <div class="form-group">
+                                    <label>Assignee</label>
+                                    <select name="assignee" class="form-control custom-select">
+                                        <option value="" selected disabled>Choose Assignee</option>
+                                        {% for user in users %}
+                                        <option value="{{user.username}}">{{user.username}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>   
+                                <button type="submit" id="submit-btn" class="btn btn-success shadow pull-right">Create Task</button>                    
+                            </form>
+                            <br/>
+                            <br/>
+                        </div>
+                        <!--Signup ends here-->
+                        </div>
+                </div>
+                <div class="modal-footer">
+                <div class="col-sm-12 col-md-12 col-lg-12 alert alert-info" style="text-align:center;">
+                   Please make sure you describe your task well
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+    <!--Task Form-->
+    
+    </main>
+        <script src="/static/js/jquery.min.js"></script>
+        <script src="https://pharst.pywe.org/static/business/assets/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://pharst.pywe.org/static/business/assets/vendor/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+        <script src="https://pharst.pywe.org/static/business/assets/vendor/moment.min.js"></script>
+        <script src="https://pharst.pywe.org/static/business/assets/vendor/bootstrap-datetimepicker.js"></script>
+        <script src="/static/js/bootstrap3.min.js"></script>
+        <script src="https://pharst.pywe.org/static/js/axios.min.js"></script>
+        <script>
+            // UTILITIES START
+            function exists(ele){if (ele !== null && ele !== undefined){return true}else{return false}};
+            function buildForm(id){
+                let myForm = document.getElementById(id);
+                let formData = new FormData(myForm);
+                //This will build the form from name, value pairs
+                    var obj = {}
+                    var all = []
+                    for(var pair of formData.entries()){
+                        var name = pair[0]
+                        var val = pair[1]
+                        obj[name]=val
+                    }
+                    return obj
+            }
+
+            function changeDate(date){
+                var dateArray = date.split("/");
+                var day = dateArray[1]
+                var month = dateArray[0]
+                var year = dateArray[2]
+                var newDate = year+"-"+month+"-"+day
+                return newDate
+            }
+            
+
+            
+
+            
+
+            // UTILITIES END
+            $('#myfab').on('click', function(ev) {
+                $('#addModal').modal('show');
+            });
+
+            $('#taskForm').on('submit', function(event) {
+                event.preventDefault();
+                var data = buildForm("taskForm");
+                console.log(data);
+                data.due_date = changeDate(data.due_date);
+                console.log(data);
+                
+                $("#submit-btn").html("Creating Task...");
+                $("#submit-btn").attr("disabled",true);
+                $("#info-message").html(`<div class="alert alert-info text-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                    <p>Creating the task...</p>
+                                    </div>`)
+                createTask(data);
+            });
+            function createTask(data){
+            
+            axios.post('/api/v1/create-task/',data)
+            .then(function (response) {
+                $("#info-message").html('');
+                if(response.data.success){
+                    $("#success-message").attr("hidden",false);
+                    $("#success-message").html("Task created!");
+                    window.location = window.location;
+                    
+                }else{
+                    $("#error-message").attr("hidden",false);
+                    $("#error-message").html("Task could not be created!");
+                }
+                $("#submit-btn").html(`Create Task`);
+                $("#submit-btn").attr("disabled",false);
+            })
+            .catch(function (error) {  
+                if(exists(error.response)){
+                    console.log(error.response.data)
+                }
+                $("#info-message").html('');
+                $("#error-message").attr("hidden",false);
+                $("#error-message").html("An error occured");
+                $("#submit-btn").html(`Create Task`);
+                $("#submit-btn").attr("disabled",false);
+            });
+            }
+            $('.datepicker').datepicker(); 
+        </script>
+    </body>
+</html>
